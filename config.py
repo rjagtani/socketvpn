@@ -1,0 +1,1 @@
+PASSWORD = {'client1': "123"}
