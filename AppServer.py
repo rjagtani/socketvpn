@@ -4,7 +4,7 @@ import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-app_server_address = ('localhost', 20000)
+app_server_address = ('localhost', 40000)
 print(f'starting up on {app_server_address}')
 sock.bind(app_server_address)
 
@@ -17,8 +17,8 @@ while True:
     try:
         print(f'connection from {server_address}')
         while True:
+            data = connection.recv(16)
             if data:
-                data = connection.recv(16)
                 data_decode = data.decode('utf-8')
                 data_send = 'Reached App Server' + data_decode
                 data_send = data_send.encode('utf-8')

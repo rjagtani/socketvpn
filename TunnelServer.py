@@ -8,7 +8,7 @@ key = b'\x1c\xf3\xf5\x8ebp\x9a\x0f2|N\xb5\x06\x9d[\xa5'
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-server_address = ('localhost', 10000)
+server_address = ('0.0.0.0', 10000)
 print(f'starting up on {server_address}')
 sock.bind(server_address)
 
@@ -16,7 +16,7 @@ sock.bind(server_address)
 sock.listen(1)
 sock_app_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect the socket to the server's address and port
-app_server_address = ('localhost', 20000)
+app_server_address = ('localhost', 40000)
 print(f'connecting to {app_server_address}')
 sock_app_server.connect(app_server_address)
 #server_address = ('192.168.178.37', 10000)
