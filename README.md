@@ -7,11 +7,7 @@ The server decrypts the message and forwards it to the App Server. The App Serve
 appending some text. The server then encrypts this message and sends it back to the client, which decrypts it and
 prints it. The aim of this repo is to mimic the basic functionalities of a VPN using socket programming
 
-### 2. Diagram
-
-[Insert diagram]
-
-### 3. Working
+### 2. Working
 
 1. Client establishes connection with server and the server asks for authentication.
 2. Once authentication is done, the client is asked to input a message
@@ -20,7 +16,7 @@ prints it. The aim of this repo is to mimic the basic functionalities of a VPN u
 5. The decrypted message is then forwarded to the App Server which receives it, appends some text and sends it back
 6. The entire cycle then proceeds in reverse as the server encrypts the response and the client decrypts it
 
-### 4. Steps to run the code
+### 3. Steps to run the code
 1. Clone the repo.
 2. :warning: Install python > 3.8. This repo has been tested on python 3.10
 3. Install requirements using this command: `pip install -r requirements.txt`.
