@@ -1,7 +1,8 @@
 import socket
 from Crypto.Cipher import AES
 import config
-from Crypto.Random import get_random_bytes
+import hashlib
+
 # AES encryption key
 key = b'\x1c\xf3\xf5\x8ebp\x9a\x0f2|N\xb5\x06\x9d[\xa5'
 # Create a TCP/IP socket
@@ -31,8 +32,17 @@ while True:
 
     try:
         print(f'connection from {client_address}')
-        password = connection.recv(16)
-        if password.decode('utf-8') == config.PASSWORD['client1']:
+        password_to_check = connection.recv(16)
+        hashed_pwd = config.PASSWORD['client1']
+        salt_from_password = hashed_pwd[:32]  # 32 is the length of the salt
+        key_from_password = hashed_pwd[32:]
+        new_key = hashlib.pbkdf2_hmac(
+            'sha256',
+            password_to_check,  # Convert the password to bytes
+            salt_from_password,
+            100000
+        )
+        if new_key == key_from_password:
             auth_message = "auth success"
             connection.sendall(auth_message.encode('utf-8'))
             while True:
