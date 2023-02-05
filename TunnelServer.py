@@ -22,12 +22,13 @@ sock_app_server.connect(app_server_address)
 #server_address = ('192.168.178.37', 10000)
 
 
+incorrect_password_attempts = 0
 while True:
     # Wait for a connection
     print('waiting for a connection')
 
     connection, client_address = sock.accept()
-    incorrect_password_attempts = 0
+
     try:
         print(f'connection from {client_address}')
         password = connection.recv(16)
@@ -53,7 +54,8 @@ while True:
                     nonce1 = cipher1.nonce
                     ciphertext, tag1 = cipher1.encrypt_and_digest(app_data_send.encode('utf-8'))
                     connection.sendall(ciphertext)
-                    connection.sendall(nonce1 + tag1)
+                    nn1 = nonce1 + tag1
+                    connection.sendall(nn1)
 
                 else:
                     print('no more data from', client_address)

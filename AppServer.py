@@ -20,7 +20,7 @@ while True:
             data = connection.recv(16)
             if data:
                 data_decode = data.decode('utf-8')
-                data_send = 'Reached App Server' + data_decode
+                data_send = 'Reached App Server: ' + data_decode
                 data_send = data_send.encode('utf-8')
                 connection.sendall(data_send)
             else:

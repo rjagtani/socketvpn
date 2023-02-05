@@ -9,7 +9,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the server's address and port
 #server_address = ('localhost', 10000)
-server_address = ('192.168.178.37', 10000)
+server_address = ('localhost', 10000)
 print(f'connecting to {server_address}')
 sock.connect(server_address)
 
