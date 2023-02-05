@@ -1,10 +1,11 @@
 import socket
+import config
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-app_server_address = ('localhost', 40000)
+app_server_address = config.APP_SERVER_ADDRESS
 print(f'starting up on {app_server_address}')
 sock.bind(app_server_address)
 
@@ -17,6 +18,7 @@ while True:
     try:
         print(f'connection from {server_address}')
         while True:
+            # Receive message from server, append text to it and send it back
             data = connection.recv(16)
             if data:
                 data_decode = data.decode('utf-8')

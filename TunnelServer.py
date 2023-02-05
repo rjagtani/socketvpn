@@ -4,24 +4,24 @@ import config
 import hashlib
 
 # AES encryption key
-key = b'\x1c\xf3\xf5\x8ebp\x9a\x0f2|N\xb5\x06\x9d[\xa5'
+key = config.ENCRYPTION_KEY
+
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-server_address = ('0.0.0.0', 10000)
+server_address = config.SERVER_ADDRESS
 print(f'starting up on {server_address}')
 sock.bind(server_address)
 
 # Listen for incoming connections
 sock.listen(1)
 sock_app_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 # Connect the socket to the server's address and port
-app_server_address = ('localhost', 40000)
+app_server_address = config.APP_SERVER_ADDRESS
 print(f'connecting to {app_server_address}')
 sock_app_server.connect(app_server_address)
-#server_address = ('192.168.178.37', 10000)
-
 
 incorrect_password_attempts = 0
 while True:
@@ -31,6 +31,7 @@ while True:
     connection, client_address = sock.accept()
 
     try:
+        # Authentication of client password
         print(f'connection from {client_address}')
         password_to_check = connection.recv(16)
         hashed_pwd = config.PASSWORD['client1']
@@ -46,20 +47,21 @@ while True:
             auth_message = "auth success"
             connection.sendall(auth_message.encode('utf-8'))
             while True:
+                # Receive encrypted data from the client and decrypt it
                 data = connection.recv(16)
-                print(data)
                 if data:
                     nonce_tag = connection.recv(16+16)
                     nonce,tag = nonce_tag[:16], nonce_tag[16:]
                     cipher = AES.new(key, AES.MODE_EAX, nonce)
                     plaintext = cipher.decrypt(data)
 
-                    #Sending data to appserver from here
+                    # Sending data to AppServer from here
                     sock_app_server.sendall(plaintext)
                     app_data = sock_app_server.recv(65444)
                     app_data_decode = app_data.decode('utf-8')
-                    app_data_send = 'Hello, this is your plaintext:' + app_data_decode
+                    app_data_send = app_data_decode
 
+                    # Receive response from AppServer, encrypt it and send it to client
                     cipher1 = AES.new(key, AES.MODE_EAX)
                     nonce1 = cipher1.nonce
                     ciphertext, tag1 = cipher1.encrypt_and_digest(app_data_send.encode('utf-8'))
@@ -71,10 +73,12 @@ while True:
                     print('no more data from', client_address)
                     break
         else:
+
             incorrect_password_attempts += 1
             auth_message = "Inc pwd" + str(incorrect_password_attempts)
             connection.sendall(auth_message.encode('utf-8'))
             print("Incorrect Password Attempt: " + str(3-incorrect_password_attempts) + " attempts left")
+            # Stop listening to requests if 3 incorrect attempts are made
             if incorrect_password_attempts == 3:
                 break
     finally:

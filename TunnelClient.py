@@ -1,26 +1,24 @@
 import socket
 from Crypto.Cipher import AES
+import config
 
 # AES encryption key (should be the same as the one used on the server)
-key = b'\x1c\xf3\xf5\x8ebp\x9a\x0f2|N\xb5\x06\x9d[\xa5'
+key = config.ENCRYPTION_KEY
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the server's address and port
-#server_address = ('localhost', 10000)
-server_address = ('localhost', 10000)
+server_address = config.SERVER_ADDRESS
 print(f'connecting to {server_address}')
 sock.connect(server_address)
 
 try:
-    # Send data
-
-    # Look for the response
-    # amount_received = 0
-    # amount_expected = len(message)
+    # Enter password
     client_password = input("Enter Password:")
     sock.sendall(client_password.encode('utf-8'))
+
+    # Receive auth message
     auth_message = sock.recv(65444)
     auth_message = auth_message.decode('utf-8')
     print(auth_message)
@@ -31,14 +29,14 @@ try:
             message = str.encode(message_str)
             print(f'sending {message}')
 
-            # Send message to server
+            # Send message to server after encryption
             cipher = AES.new(key, AES.MODE_EAX)
             nonce = cipher.nonce
             ciphertext, tag = cipher.encrypt_and_digest(message)
             sock.sendall(ciphertext)
             sock.sendall(nonce + tag)
 
-            # get encrypted data from server
+            # get encrypted response from server and decrypt it
             data = sock.recv(65455)
             #print(data)
             nonce_tag1 = sock.recv(16 + 16)
@@ -52,6 +50,7 @@ try:
         sock.close()
         print('closing socket')
     else:
+        # Closes socket when incorrect password is entered
         print("Incorrect Password")
         sock.close()
         print('closing socket')
