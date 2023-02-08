@@ -16,13 +16,15 @@ while True:
     print('waiting for a connection')
     connection, server_address = sock.accept()
     try:
-        print(f'connection from {server_address}')
+        print(f'Connection from {server_address}')
         while True:
             # Receive message from server, append text to it and send it back
             data = connection.recv(16)
             if data:
                 data_decode = data.decode('utf-8')
-                data_send = 'Reached App Server: ' + data_decode
+                print(f'App Server: Received data from server: {data_decode}')
+                data_send = 'Received ' + data_decode
+                print(f'App Server: Sending response to server: {data_decode}')
                 data_send = data_send.encode('utf-8')
                 connection.sendall(data_send)
             else:

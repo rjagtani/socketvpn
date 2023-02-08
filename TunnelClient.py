@@ -27,17 +27,19 @@ try:
         while message_str != 'q':
             # Encode message to bytes
             message = str.encode(message_str)
-            print(f'sending {message}')
+
 
             # Send message to server after encryption
             cipher = AES.new(key, AES.MODE_EAX)
             nonce = cipher.nonce
             ciphertext, tag = cipher.encrypt_and_digest(message)
+            print(f'Client : Sending encrypted message to Server: {ciphertext}')
             sock.sendall(ciphertext)
             sock.sendall(nonce + tag)
 
             # get encrypted response from server and decrypt it
             data = sock.recv(65455)
+            print(f'Client: received encrypted response from Server: {ciphertext}')
             #print(data)
             nonce_tag1 = sock.recv(16 + 16)
             nonce1, tag1 = nonce_tag1[:16], nonce_tag1[16:]
@@ -45,7 +47,7 @@ try:
             plaintext = cipher1.decrypt(data)
             plaintext = plaintext.decode('utf-8')
 
-            print(f'received {plaintext}')
+            print(f'Client: printing decrypted response: {plaintext}')
             message_str = input("-> ")
         sock.close()
         print('closing socket')

@@ -49,22 +49,25 @@ while True:
             while True:
                 # Receive encrypted data from the client and decrypt it
                 data = connection.recv(16)
+                print(f'Server: received encrypted text from client: {data}')
                 if data:
                     nonce_tag = connection.recv(16+16)
                     nonce,tag = nonce_tag[:16], nonce_tag[16:]
                     cipher = AES.new(key, AES.MODE_EAX, nonce)
                     plaintext = cipher.decrypt(data)
-
+                    print(f'Server: forwarding decrypted data to app server: {plaintext}')
                     # Sending data to AppServer from here
                     sock_app_server.sendall(plaintext)
                     app_data = sock_app_server.recv(65444)
                     app_data_decode = app_data.decode('utf-8')
+                    print(f'Server: Received response from App server: {plaintext}')
                     app_data_send = app_data_decode
 
                     # Receive response from AppServer, encrypt it and send it to client
                     cipher1 = AES.new(key, AES.MODE_EAX)
                     nonce1 = cipher1.nonce
                     ciphertext, tag1 = cipher1.encrypt_and_digest(app_data_send.encode('utf-8'))
+                    print(f'Server: Sending encrypted response to Client: {ciphertext}')
                     connection.sendall(ciphertext)
                     nn1 = nonce1 + tag1
                     connection.sendall(nn1)
